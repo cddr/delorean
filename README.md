@@ -1,4 +1,4 @@
-# delorean [![Build Status](https://travis-ci.org/[cddr]/[delorean].png)]
+# delorean [![Build Status](https://travis-ci.org/cddr/delorean.png)]
 
 A simple set of macros for mocking time
 
