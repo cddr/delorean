@@ -1,6 +1,0 @@
-language: common-lisp
-compiler:
-  - ccl
-  - sbcl
-# Change this to your needs
-script: make
