@@ -4,7 +4,8 @@
   (:export 
    :with-frozen-clock
    :with-shifted-clock
-   :with-scaled-clock)
+   :with-scaled-clock
+   :frozen-clock :shifted-clock :scaled-clock)
   (:documentation "A set of macros loosely based on travisjeffery's timecop
  library with the purpose of making it easier to test time-sensitive code"))
 
@@ -24,7 +25,7 @@
 
 (defclass frozen-clock (mock-clock)
   ((frozen-time :initarg :frozen-time :accessor frozen-time))
-  (:documentation "Arranges for (now) to return `frozen-time' in perpetuity"))
+  (:documentation "A clock which allows time to be frozen in perpetuity"))
 
 (defmethod local-time:clock-now ((self frozen-clock))
   (frozen-time self))
@@ -40,7 +41,8 @@ Within body (and any code called by body), calling (now) will always return `tim
 
 
 (defclass shifted-clock (mock-clock)
-  ((shifted-time :initarg :shifted-time :accessor shifted-time)))
+  ((shifted-time :initarg :shifted-time :accessor shifted-time))
+  (:documentation "A clock which allows time to be shifted to the specified time"))
 
 (defmethod local-time:clock-now ((self shifted-clock))
   (local-time:universal-to-timestamp
@@ -49,6 +51,7 @@ Within body (and any code called by body), calling (now) will always return `tim
 	 (local-time:timestamp-to-universal (created-at self))))))
 
 (defmacro with-shifted-clock (to &body body)
+  "Teleports to the time indicated by `to' before executing `body'"
   `(let* ((local-time:*clock*
 	   (make-instance 'shifted-clock
 			  :shifted-time ,to)))
@@ -56,7 +59,8 @@ Within body (and any code called by body), calling (now) will always return `tim
 
 
 (defclass scaled-clock (mock-clock)
-  ((scale :initarg :scale :accessor scale)))
+  ((scale :initarg :scale :accessor scale))
+  (:documentation "A clock which allows time to proceed faster or slower than normal"))
 
 (defmethod local-time:clock-now ((self scaled-clock))
   (local-time:universal-to-timestamp
@@ -66,6 +70,7 @@ Within body (and any code called by body), calling (now) will always return `tim
 	      (local-time:timestamp-to-universal (created-at self)))))))
 
 (defmacro with-scaled-clock (scale &body body)
+  "Accelerates (or decelarates) time by a factor indicated by `scale'"
   `(let ((local-time:*clock*
 	  (make-instance 'scaled-clock :scale ,scale)))
      ,@body))

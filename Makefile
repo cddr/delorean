@@ -8,6 +8,7 @@ SCL      ?= scl
 CCL      ?= ccl
 
 TEST_SCRIPT = "run-tests.lisp"
+GENDOCS     = "generate-docs.lisp"
 
 clean:
 	@$(MAKE) -wC tests clean
@@ -37,5 +38,12 @@ test-allegro:
 
 test-ccl:
 	@-$(CCL) --no-init --load $(TEST_SCRIPT)
+
+docs-sbcl:
+	@-$(SBCL) --noinform --load $(GENDOCS)
+
+docs-ccl:
+	mkdir -p docs && @-$(CCL) --no-init --load $(GENDOCS)
+
 
 test: test-openmcl test-sbcl test-cmucl test-clisp
